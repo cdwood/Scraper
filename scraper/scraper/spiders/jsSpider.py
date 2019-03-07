@@ -23,12 +23,22 @@ class jsSpiderSpider(scrapy.Spider):
     def parse(self, response):
 
         links = []
+        linkText = []
+        print(type(response))
 
-        for link in response.css('a').getall():
-            links.append(link)
+        for link in response.css('a'):
+            # newLink = link.css('a::attr(href').get()
+            # links.append(newLink)
+            # text = link.css(a::text).get()
+            # newLinkText = link.css('a::text').get()
+            # linkText.append(newLinkText)
             yield {
-                'link': link
+                'link': link.css("a::attr(href)").get(),
+                'text': link.css("a::text").get()
             }
+        
+        print("Link array length: " + len(links))
+        print("Link Text Array Length: " + len(linkText))
 
         # privacy = [k for k in links if '']
         # print(links)
