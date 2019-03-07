@@ -24,6 +24,7 @@ class jsSpiderSpider(scrapy.Spider):
 
         links = []
         linkText = []
+        followLinks = []
         print(type(response))
 
         for link in response.css('a'):
@@ -32,13 +33,62 @@ class jsSpiderSpider(scrapy.Spider):
             # text = link.css(a::text).get()
             # newLinkText = link.css('a::text').get()
             # linkText.append(newLinkText)
+            links.append(link.css("a::attr(href)").get())
+            linkText.append(link.css("a::text").get())
+
+        for x in range(len(links)):
+            # print("Link Text: " + str(type(linkText[x])))
+            if linkText[x] is not None:
+                if "Privacy Policy" in linkText[x]:
+                    followLinks.append(links[x])
+                elif "privacy policy" in linkText[x]:
+                    followLinks.append(links[x])
+                elif "Terms of Use" in linkText[x]:
+                    followLinks.append(links[x])
+                elif "Terms & Conditions" in linkText[x]:
+                    followLinks.append(links[x])
+                elif "Terms & Privacy" in linkText[x]:
+                    followLinks.append(links[x])
+
+        for link in followLinks:
             yield {
-                'link': link.css("a::attr(href)").get(),
-                'text': link.css("a::text").get()
+                'link': link
             }
+
+        for link in followLinks:
+            link = response.urljoin(link)
+            yield scrapy.Request(link, callback=self.parsePolicy)
+    
+
+    def parsePolicy (self, response):
+        foundText = []
+        botText = []
+
+        for text in response.css('*::text').getall():
+            foundText.append(text)
         
-        print("Link array length: " + len(links))
-        print("Link Text Array Length: " + len(linkText))
+        for text in foundText:
+            if "scraping" in text:
+                botText.append(text)
+            elif "robot" in text:
+                botText.append(text)
+            elif "robots" in text:
+                botText.append(text)
+            elif "scraper" in text:
+                botText.append(text)
+            elif "scrape" in text:
+                botText.append(text)
+            elif "crawl" in text:
+                botText.append(text)
+            elif "crawler" in text:
+                botText.append(text)
+            elif "crawlers" in text:
+                botText.append(text)
+        
+        for text in botText:
+            yield {
+                'text': text
+            }
 
         # privacy = [k for k in links if '']
         # print(links)
