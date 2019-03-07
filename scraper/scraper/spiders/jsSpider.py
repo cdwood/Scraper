@@ -28,11 +28,6 @@ class jsSpiderSpider(scrapy.Spider):
         print(type(response))
 
         for link in response.css('a'):
-            # newLink = link.css('a::attr(href').get()
-            # links.append(newLink)
-            # text = link.css(a::text).get()
-            # newLinkText = link.css('a::text').get()
-            # linkText.append(newLinkText)
             links.append(link.css("a::attr(href)").get())
             linkText.append(link.css("a::text").get())
 
@@ -89,10 +84,6 @@ class jsSpiderSpider(scrapy.Spider):
             yield {
                 'text': text
             }
-
-        # privacy = [k for k in links if '']
-        # print(links)
-
 
         # seen = set()
         # result = []
